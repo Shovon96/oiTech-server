@@ -46,6 +46,18 @@ async function run() {
             res.send(result)
         })
 
+        // Trending Products api
+        app.post('/trendings', async (req, res) => {
+            const featuresItem = req.body;
+            const result = await trendingCollection.insertOne(featuresItem);
+            res.send(result)
+        })
+
+        app.get('/trendings', async (req, res) => {
+            const result = await trendingCollection.find().toArray()
+            res.send(result)
+        })
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
