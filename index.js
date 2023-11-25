@@ -31,6 +31,7 @@ async function run() {
 
         // collections
         const featureCollection = client.db('OiTech').collection('features')
+        const trendingCollection = client.db('OiTech').collection('trendings')
 
 
         // features api
