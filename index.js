@@ -32,6 +32,7 @@ async function run() {
         // collections
         const featureCollection = client.db('OiTech').collection('features')
         const trendingCollection = client.db('OiTech').collection('trendings')
+        const userCollection = client.db('OiTech').collection('users')
 
 
         // features api
@@ -68,6 +69,19 @@ async function run() {
             }
             res.send('invalid request')
         })
+
+        // user releted apis
+    app.post('/users', async (req, res) => {
+        const user = req.body;
+        // insert email if user exists:
+        const query = { email: user.email };
+        const existingUser = await userCollection.findOne(query);
+        if (existingUser) {
+          return res.send({ message: 'user already exists', insertedId: null })
+        }
+        const result = await userCollection.insertOne(user)
+        res.send(result)
+      })
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
