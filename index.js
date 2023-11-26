@@ -58,6 +58,17 @@ async function run() {
             res.send(result)
         })
 
+        // product sort by upVote
+        app.get('/sort', async (req, res) => {
+            const {sort} = req.query;
+            if (sort) {
+                const result = await trendingCollection.find().sort({ upvotes: -1 }).toArray()
+                res.send(result)
+                return
+            }
+            res.send('invalid request')
+        })
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
