@@ -2,17 +2,17 @@ const express = require('express');
 const app = express()
 require('dotenv').config();
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const port = process.env.PORT || 5000;
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
-// ZDgWxpyElyTwfSVR
-// OiTech
+
 
 // middleWare
 app.use(cors())
 app.use(express.json())
 
 
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.riywk8u.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -35,8 +35,31 @@ async function run() {
         const userCollection = client.db('OiTech').collection('users')
 
 
+        // jwt releted api 
+    app.post('/jwt', async (req, res) => {
+        const user = req.body;
+        const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5h' });
+        res.send({ token });
+      })
+  
+      // middleware varify token
+      const verifyToken = (req, res, next) => {
+        // console.log('inside verify token',req.headers.authorization);
+        if (!req.headers.authorization) {
+          return res.status(401).send({ message: 'unauthorize access' })
+        }
+        const token = req.headers.authorization.split(' ')[1];
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
+          if (error) {
+            return res.status(401).send({ message: 'unauthorize access' })
+          }
+          req.decoded = decoded;
+          next()
+        })
+      }
+
         // features api
-        app.post('/features', async (req, res) => {
+        app.post('/features', verifyToken, async (req, res) => {
             const featuresItem = req.body;
             const result = await featureCollection.insertOne(featuresItem);
             res.send(result)
@@ -55,7 +78,7 @@ async function run() {
         })
 
         // Trending Products api
-        app.post('/trendings', async (req, res) => {
+        app.post('/trendings', verifyToken, async (req, res) => {
             const featuresItem = req.body;
             const result = await trendingCollection.insertOne(featuresItem);
             res.send(result)
@@ -64,6 +87,13 @@ async function run() {
         app.get('/trendings', async (req, res) => {
             const result = await trendingCollection.find().toArray()
             res.send(result)
+        })
+
+        app.get('/trendings/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await trendingCollection.findOne(query)
+            res.send(result);
         })
 
         // product sort by upVote
