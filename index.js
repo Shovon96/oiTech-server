@@ -205,37 +205,6 @@ async function run() {
         const result = await paymentCollection.findOne(query)
         res.send(result)
       })
-        // payment intent releted apis
-        // app.post('/create-payment-intent', async (req, res) => {
-        //     const { price } = req.body;
-        //     const amount = parseInt(price * 100);
-        //     const paymentIntent = await stripe.paymentIntents.create({
-        //         amount: amount,
-        //         currency: 'usd',
-        //         payment_method_types: ['card']
-
-        //     });
-        //     res.send({
-        //         clientSecret: paymentIntent.client_secret
-        //     })
-        // })
-
-        // // payment history post db
-        // app.post('/payments', async (req, res) => {
-        //     const payment = req.body;
-        //     const paymentResult = await paymentCollection.insertOne(payment);
-
-        //     // carefully delete each item from the cart
-        //     // console.log('payment info', payment);
-        //     const query = {
-        //         _id: {
-        //             $in: payment.cartIds.map(id => new ObjectId(id))
-        //         }
-        //     };
-
-        //     const deletedResult = await cartCollection.deleteMany(query)
-        //     res.send({ paymentResult, deletedResult })
-        // })
 
         // app.get('/payments/:email', verifyToken, async (req, res) => {
         //     const query = { email: req.params.email }
