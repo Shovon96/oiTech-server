@@ -152,21 +152,7 @@ async function run() {
             const result = await trendingCollection.find().toArray()
             res.send(result)
         })
-
-        // get specipic user trending post
-        // app.get('/trendings/:email', async (req, res) => {
-        //     const email = req.params.email;
-        //     const query = { 'woner.email': email };
-        //     const result = await trendingCollection.find(query).toArray();
-        //     res.send(result);
-        //   });
-
-        // app.get('/trendings/:email', async (req, res) => {
-        //     const email = req.query.email;
-        //     const query = { email: email }
-        //     const result = await trendingCollection.find(query).toArray();
-        //     res.send(result)
-        //   })
+        
 
         app.get('/trending/:id', async (req, res) => {
             const id = req.params.id;
