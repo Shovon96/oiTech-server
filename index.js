@@ -129,11 +129,13 @@ async function run() {
             res.send(result)
         })
 
+        // features all products get
         app.get('/features', async (req, res) => {
             const result = await featureCollection.find().toArray()
             res.send(result)
         })
 
+        // for product details route
         app.get('/features/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
@@ -148,12 +150,13 @@ async function run() {
             res.send(result)
         })
 
+        // trendings all data get
         app.get('/trendings', async (req, res) => {
             const result = await trendingCollection.find().toArray()
             res.send(result)
         })
-        
 
+        // for product details route
         app.get('/trending/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
@@ -161,11 +164,35 @@ async function run() {
             res.send(result);
         })
 
+        // for user product show in email
         app.get('/trendings/:email', async (req, res) => {
             const email = req.params.email;
-            const query = {'owner.email': email}
+            const query = { 'owner.email': email }
             const result = await trendingCollection.find(query).toArray()
             res.send(result);
+        })
+
+        // update products one item api
+        app.patch('/trendings/:id', async (req, res) => {
+            const item = req.body;
+            // console.log(item);
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    name: item.name,
+                    image: item.image,
+                    description: item.description,
+                    tags: item.tags,
+                    externalLinks: {
+                        officialSite: item.officialSite,
+                        documentation: item.documentation,
+                        github: item.github
+                      }
+                }
+            }
+            const result = await trendingCollection.updateOne(filter, updatedDoc);
+            res.send(result)
         })
 
         // product sort by upVote
@@ -180,31 +207,31 @@ async function run() {
         })
 
         // create-payment-intent
-    app.post("/create-payment-intent", async (req, res) => {
-        const { price } = req.body;
-        const amount = parseInt(price * 100);
-        if (!price || amount < 1) return;
-        const { client_secret } = await stripe.paymentIntents.create({
-          amount: amount,
-          currency: "usd",
-          payment_method_types: ["card"],
+        app.post("/create-payment-intent", async (req, res) => {
+            const { price } = req.body;
+            const amount = parseInt(price * 100);
+            if (!price || amount < 1) return;
+            const { client_secret } = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: "usd",
+                payment_method_types: ["card"],
+            });
+            res.send({ clientSecret: client_secret });
         });
-        res.send({ clientSecret: client_secret });
-      });
-  
-      // Save classInfo in enrolledClassesCollection
-      app.post("/subscribers", async (req, res) => {
-        const info = req.body;
-        const result = await paymentCollection.insertOne(info);
-        res.send(result);
-      });
 
-      app.get('/subscribers/:email', async (req, res)=> {
-        const email = req.params.email;
-        const query = {email: email}
-        const result = await paymentCollection.findOne(query)
-        res.send(result)
-      })
+        // Save classInfo in enrolledClassesCollection
+        app.post("/subscribers", async (req, res) => {
+            const info = req.body;
+            const result = await paymentCollection.insertOne(info);
+            res.send(result);
+        });
+
+        app.get('/subscribers/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+            const result = await paymentCollection.findOne(query)
+            res.send(result)
+        })
 
         // app.get('/payments/:email', verifyToken, async (req, res) => {
         //     const query = { email: req.params.email }
