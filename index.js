@@ -35,6 +35,7 @@ async function run() {
         const trendingCollection = client.db('OiTech').collection('trendings')
         const userCollection = client.db('OiTech').collection('users')
         const paymentCollection = client.db('OiTech').collection('payments')
+        const reviewsCollections = client.db('OiTech').collection('reviews');
 
 
         // jwt releted api 
@@ -213,6 +214,19 @@ async function run() {
                 return
             }
             res.send('invalid request')
+        })
+
+        // reviews releted apis
+        app.post('/reviews', async (req, res) => {
+            const prod = req.body;
+            const result = await reviewsCollections.insertOne(prod);
+            res.send(result)
+        })
+
+        app.get('/reviews', async (req, res) => {
+            const cursor = reviewsCollections.find();
+            const result = await cursor.toArray()
+            res.send(result)
         })
 
         // create-payment-intent
