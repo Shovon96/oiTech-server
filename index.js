@@ -85,27 +85,28 @@ async function run() {
             res.send(result)
         })
 
-        // app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
-        //     const result = await userCollection.find().toArray()
-        //     res.send(result);
-        // })
+        app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
+            const result = await userCollection.find().toArray()
+            res.send(result);
+        })
 
-        // app.delete('/users/:id', verifyAdmin, verifyToken, async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: new ObjectId(id) };
-        //     const result = await userCollection.deleteOne(query);
-        //     res.send(result);
-        // })
+        app.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await userCollection.deleteOne(query);
+            res.send(result);
+        })
 
-        // app.patch('/users/admin/:id', verifyAdmin, verifyToken, async (req, res) => {
-        //     const id = req.params.id;
-        //     const filter = { _id: new ObjectId(id) }
-        //     const updatedDoc = {
-        //         $set: { role: 'admin' }
-        //     }
-        //     const result = await userCollection.updateOne(filter, updatedDoc);
-        //     res.send(result)
-        // })
+        // user update user to admin
+        app.patch('/users/admin/:id',  verifyToken, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const updatedDoc = {
+                $set: { role: 'admin' }
+            }
+            const result = await userCollection.updateOne(filter, updatedDoc);
+            res.send(result)
+        })
 
         // chack admin or not
         app.get('/users/admin/:email', verifyToken, async (req, res) => {
@@ -123,7 +124,7 @@ async function run() {
         })
 
         // features api
-        app.post('/features', verifyToken, async (req, res) => {
+        app.post('/features', async (req, res) => {
             const featuresItem = req.body;
             const result = await featureCollection.insertOne(featuresItem);
             res.send(result)
@@ -165,7 +166,7 @@ async function run() {
         })
 
         // for user product show in email
-        app.get('/trendings/:email', async (req, res) => {
+        app.get('/trendings/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
             const query = { 'owner.email': email }
             const result = await trendingCollection.find(query).toArray()
@@ -173,7 +174,7 @@ async function run() {
         })
 
         // update products one item api
-        app.patch('/trendings/:id', async (req, res) => {
+        app.patch('/trendings/:id', verifyToken, async (req, res) => {
             const item = req.body;
             // console.log(item);
             const id = req.params.id;
@@ -194,6 +195,14 @@ async function run() {
             const result = await trendingCollection.updateOne(filter, updatedDoc);
             res.send(result)
         })
+
+        // user post product delete
+        app.delete('/trendings/:id', verifyToken, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await trendingCollection.deleteOne(query);
+            res.send(result)
+          })
 
         // product sort by upVote
         app.get('/sort', async (req, res) => {
