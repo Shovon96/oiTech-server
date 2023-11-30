@@ -28,7 +28,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
         // collections
         const featureCollection = client.db('OiTech').collection('features')
@@ -256,19 +256,9 @@ async function run() {
             res.send(result)
         })
 
-        // app.get('/payments/:email', verifyToken, async (req, res) => {
-        //     const query = { email: req.params.email }
-        //     if (req.params.email !== req.decoded.email) {
-        //         return res.status(403).send({ message: 'forbidden access' })
-        //     }
-        //     const result = await paymentCollection.find(query).toArray()
-        //     res.send(result)
-        // })
-
-
         // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+        // await client.db("admin").command({ ping: 1 });
+        // console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
